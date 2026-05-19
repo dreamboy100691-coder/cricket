@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0e17">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Cricket Run Counter Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #0f1419;
+            --bg-card: rgba(26, 31, 46, 0.8);
+            --bg-card-hover: rgba(31, 41, 55, 0.9);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-orange: #f59e0b;
+            --accent-purple: #8b5cf6;
+            --border-color: rgba(30, 41, 59, 0.8);
+            --glass-bg: rgba(15, 20, 25, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --radius-2xl: 28px;
+            --radius-xl: 20px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-full: 9999px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-primary);
+            background-image: 
+                radial-gradient(ellipse at 20% 10%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 90%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.04) 0%, transparent 70%);
+            font-family: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Glass morphism cards */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-xl);
+            padding: 24px 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 4px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(6, 182, 212, 0.3);
+        }
+        .logo-text {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            font-size: 1.3rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            position: relative;
+        }
+        .icon-btn:hover {
+            background: var(--bg-card-hover);
+            color: #fff;
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+            transform: translateY(-1px);
+        }
+        .icon-btn:active {
+            transform: scale(0.93);
+        }
+        .icon-btn.active {
+            background: var(--accent-purple);
+            border-color: var(--accent-purple);
+            color: #fff;
+            box-shadow: 0 0 24px rgba(139, 92, 246, 0.5);
+            animation: pulse-glow 2s infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.4); }
+            50% { box-shadow: 0 0 36px rgba(139, 92, 246, 0.7); }
+        }
+
+        /* Score Display */
+        .score-display {
+            text-align: center;
+            padding: 8px 0;
+        }
+        .main-score {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 8px;
+        }
+        .runs-display {
+            font-family: 'JetBrains Mono', 'Plus Jakarta Sans', monospace;
+            font-weight: 800;
+            font-size: clamp(5rem, 18vw, 8rem);
+            line-height: 1;
+            background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.4));
+        }
+        .separator {
+            font-size: clamp(3.5rem, 14vw, 6rem);
+            color: var(--text-tertiary);
+            opacity: 0.4;
+            font-weight: 300;
+        }
+        .wickets-display {
+            font-family: 'JetBrains Mono', 'Plus Jakarta Sans', monospace;
+            font-weight: 800;
+            font-size: clamp(5rem, 18vw, 8rem);
+            line-height: 1;
+            background: linear-gradient(180deg, #f87171 0%, #ef4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 4px 12px rgba(239, 68, 68, 0.4));
+        }
+        .overs-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 1.6rem;
+            color: var(--accent-cyan);
+            margin-top: 4px;
+            letter-spacing: 2px;
+        }
+        .overs-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--text-tertiary);
+            display: block;
+            font-weight: 500;
+        }
+
+        /* Runboard */
+        .runboard {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 8px 0;
+        }
+        .ball-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background: rgba(30, 37, 50, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-secondary);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .ball-dot.current {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.2);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+            animation: currentPulse 1.8s infinite;
+        }
+        @keyframes currentPulse {
+            0%, 100% { box-shadow: 0 0 16px rgba(59, 130, 246, 0.4); }
+            50% { box-shadow: 0 0 32px rgba(59, 130, 246, 0.8); }
+        }
+        .ball-dot.wicket { border-color: var(--accent-red); color: #f87171; background: rgba(239, 68, 68, 0.15); }
+        .ball-dot.four { border-color: var(--accent-green); color: #34d399; background: rgba(16, 185, 129, 0.15); }
+        .ball-dot.six { border-color: var(--accent-orange); color: #fbbf24; background: rgba(245, 158, 11, 0.15); }
+
+        /* Target Banner */
+        .target-banner {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(59, 130, 246, 0.15));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 14px 16px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: none;
+            animation: slideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .target-banner .badge {
+            background: var(--accent-purple);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin: 0 4px;
+        }
+        .close-target {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 6px;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        .close-target:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
+
+        /* Action Grid */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .action-btn {
+            padding: 16px 10px;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(30, 37, 50, 0.6);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            backdrop-filter: blur(10px);
+        }
+        .action-btn:hover {
+            background: rgba(31, 41, 55, 0.8);
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+        }
+        .action-btn:active { transform: scale(0.95); }
+        .action-btn.wicket-btn { border-color: rgba(239, 68, 68, 0.4); color: #f87171; }
+        .action-btn.wicket-btn:hover { background: rgba(239, 68, 68, 0.15); box-shadow: 0 0 24px rgba(239, 68, 68, 0.3); }
+        .action-btn.extras-btn { border-color: rgba(6, 182, 212, 0.4); color: #22d3ee; }
+        .action-btn.extras-btn:hover { background: rgba(6, 182, 212, 0.12); box-shadow: 0 0 24px rgba(6, 182, 212, 0.3); }
+        .action-btn.dot-btn { color: var(--text-secondary); }
+        .action-btn.no-ball-active {
+            background: var(--accent-blue) !important;
+            border-color: var(--accent-blue) !important;
+            color: #fff !important;
+            animation: pulse-glow 1.5s infinite;
+        }
+        .action-btn:disabled { opacity: 0.35; pointer-events: none; }
+
+        /* Bottom Row */
+        .bottom-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .bottom-btn {
+            padding: 14px;
+            border-radius: var(--radius-lg);
+            background: rgba(30, 37, 50, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+        }
+        .bottom-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); }
+        .bottom-btn.undo-btn { color: #fbbf24; border-color: rgba(245, 158, 11, 0.3); }
+        .bottom-btn.undo-btn:hover { background: rgba(245, 158, 11, 0.1); }
+        .bottom-btn.scoreboard-btn { color: #34d399; border-color: rgba(16, 185, 129, 0.3); }
+        .bottom-btn.scoreboard-btn:hover { background: rgba(16, 185, 129, 0.1); }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-2xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 92%;
+            max-width: 440px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--bg-secondary);
+            z-index: 10;
+            border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+        }
+        .modal-header h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .modal-close:hover { background: var(--accent-red); border-color: var(--accent-red); color: #fff; }
+        .modal-body { padding: 20px 24px; }
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: var(--accent-blue); color: #fff; }
+        .btn-primary:hover { background: #2563eb; box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.05); color: var(--text-primary); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .btn-danger { background: var(--accent-red); color: #fff; }
+        .btn-danger:hover { box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4); }
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+        }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; margin-bottom: 6px; font-weight: 500; color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .score-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .score-table th { padding: 10px 12px; text-align: left; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; border-bottom: 2px solid rgba(255, 255, 255, 0.06); }
+        .score-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: var(--text-secondary); }
+        .edit-row { display: flex; gap: 8px; align-items: flex-end; }
+        .edit-row .form-input { flex: 1; min-width: 60px; }
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-full);
+            padding: 12px 24px;
+            color: #fff;
+            font-weight: 500;
+            z-index: 2000;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.5s forwards;
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateX(-50%) translateY(-10px); } }
+
+        @media (max-width: 400px) {
+            .glass-card { padding: 20px 14px; }
+            .actions-grid { gap: 7px; }
+            .action-btn { padding: 14px 8px; font-size: 0.85rem; }
+            .ball-dot { width: 34px; height: 34px; font-size: 0.75rem; }
+            .runs-display, .wickets-display { font-size: clamp(3.5rem, 15vw, 5.5rem); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="glass-card">
+            <div class="header">
+                <div class="logo">
+                    <div class="logo-icon"><i class="fas fa-baseball-ball"></i></div>
+                    <span class="logo-text">CRICKET PRO</span>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn" id="btnTargetMode" title="Target Mode">
+                        <i class="fas fa-bullseye"></i>
+                    </button>
+                    <button class="icon-btn" id="btnReset" title="New Match">
+                        <i class="fas fa-rotate-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Score Display -->
+            <div class="score-display">
+                <div class="main-score">
+                    <span class="runs-display" id="displayRuns">0</span>
+                    <span class="separator">/</span>
+                    <span class="wickets-display" id="displayWickets">0</span>
+                </div>
+                <div class="overs-text">
+                    <span class="overs-label">Overs</span>
+                    <span id="displayOvers">0.0</span>
+                </div>
+            </div>
+
+            <!-- Runboard -->
+            <div class="runboard" id="runboard">
+                <div class="ball-dot" data-ball="1">•</div>
+                <div class="ball-dot" data-ball="2">•</div>
+                <div class="ball-dot" data-ball="3">•</div>
+                <div class="ball-dot" data-ball="4">•</div>
+                <div class="ball-dot" data-ball="5">•</div>
+                <div class="ball-dot" data-ball="6">•</div>
+            </div>
+
+            <!-- Target Banner -->
+            <div class="target-banner" id="targetBanner">
+                <button class="close-target" id="closeTarget">✕</button>
+                <div id="targetContent">
+                    Need <span class="badge" id="targetRunsBadge">-</span> runs in 
+                    <span class="badge" id="targetBallsBadge">-</span> balls
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="glass-card">
+            <div class="actions-grid">
+                <button class="action-btn dot-btn" data-action="dot">•<span>Dot</span></button>
+                <button class="action-btn extras-btn" data-action="wide"><i class="fas fa-arrow-right"></i><span>Wide</span></button>
+                <button class="action-btn extras-btn" data-action="noball" id="btnNoBall"><i class="fas fa-exclamation-triangle"></i><span>No Ball</span></button>
+                <button class="action-btn" data-action="1">1</button>
+                <button class="action-btn" data-action="2">2</button>
+                <button class="action-btn" data-action="3">3</button>
+                <button class="action-btn" data-action="4">4</button>
+                <button class="action-btn" data-action="6">6</button>
+                <button class="action-btn wicket-btn" data-action="wicket"><i class="fas fa-times"></i><span>Wicket</span></button>
+            </div>
+            <div class="bottom-row" style="margin-top: 12px;">
+                <button class="bottom-btn scoreboard-btn" id="btnScoreboard"><i class="fas fa-table"></i> Scoreboard</button>
+                <button class="bottom-btn undo-btn" id="btnUndo"><i class="fas fa-undo"></i> Undo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scoreboard Modal -->
+    <div class="modal-overlay" id="modalScoreboard" style="display:none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>📋 Scoreboard</h3>
+                <button class="modal-close" onclick="closeModal('modalScoreboard')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div style="max-height:200px;overflow-y:auto;margin-bottom:16px;">
+                    <table class="score-table">
+                        <thead><tr><th>Over</th><th>Balls (Extras)</th></tr></thead>
+                        <tbody id="scoreboardBody"></tbody>
+                    </table>
+                </div>
+                <div style="background:rgba(255,255,255,0.02);padding:16px;border-radius:12px;">
+                    <p style="font-weight:600;margin-bottom:8px;">✏️ Edit Score</p>
+                    <div class="edit-row">
+                        <input type="number" class="form-input" id="editOver" placeholder="Over" min="1">
+                        <input type="number" class="form-input" id="editBall" placeholder="Ball" min="1" max="6">
+                        <input type="text" class="form-input" id="editRun" placeholder="Runs">
+                        <button class="btn btn-primary" id="btnApplyEdit">Apply</button>
+                    </div>
+                    <div id="editedList" style="margin-top:8px;font-size:0.8rem;color:var(--accent-orange);max-height:80px;overflow-y:auto;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modalScoreboard')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Target Modal -->
+    <div class="modal-overlay" id="modalTarget" style="display:none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>🎯 Set Target</h3>
+                <button class="modal-close" onclick="closeModal('modalTarget')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Target Runs</label>
+                        <input type="number" class="form-input" id="inputTargetRuns" placeholder="250" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Overs</label>
+                        <input type="number" class="form-input" id="inputTargetOvers" placeholder="20" min="1">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modalTarget')">Cancel</button>
+                <button class="btn btn-primary" id="btnSetTarget">Set Target</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Undo Modal -->
+    <div class="modal-overlay" id="modalUndo" style="display:none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>↩️ Undo Last Ball?</h3>
+                <button class="modal-close" onclick="closeModal('modalUndo')">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="color:var(--text-secondary);">This will remove the last recorded delivery.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modalUndo')">Cancel</button>
+                <button class="btn btn-danger" id="confirmUndo">Undo</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer"></div>
+
+    <script>
+        // State
+        let matchId = null;
+        let matchData = null;
+        const API_BASE = '';
+
+        // API calls
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+            };
+            if (body) options.body = JSON.stringify(body);
+            const response = await fetch(`${API_BASE}${endpoint}`, options);
+            return response.json();
+        }
+
+        async function initMatch() {
+            const result = await apiCall('/api/match/new', 'POST');
+            if (result.success) {
+                matchId = result.match_id;
+                matchData = result.match;
+                updateAllUI();
+            }
+        }
+
+        async function performAction(action) {
+            if (!matchId) return;
+            const result = await apiCall(`/api/match/${matchId}/action`, 'POST', { action });
+            if (result.success) {
+                matchData = result.match;
+                updateAllUI();
+                updateScoreboardTable();
+            } else {
+                showToast(result.message || 'Action failed');
+            }
+        }
+
+        async function performUndo() {
+            if (!matchId) return;
+            const result = await apiCall(`/api/match/${matchId}/action`, 'POST', { action: 'undo' });
+            if (result.success) {
+                matchData = result.match;
+                updateAllUI();
+                updateScoreboardTable();
+                showToast('Ball undone');
+            } else {
+                showToast(result.message || 'Cannot undo');
+            }
+            closeModal('modalUndo');
+        }
+
+        async function setTarget() {
+            const runs = document.getElementById('inputTargetRuns').value;
+            const overs = document.getElementById('inputTargetOvers').value;
+            if (!matchId) return;
+            const result = await apiCall(`/api/match/${matchId}/target`, 'POST', { runs, overs });
+            if (result.success) {
+                matchData = result.match;
+                updateAllUI();
+                closeModal('modalTarget');
+                showToast('Target set!');
+            }
+        }
+
+        async function disableTarget() {
+            if (!matchId) return;
+            const result = await apiCall(`/api/match/${matchId}/target`, 'POST', { disable: true });
+            if (result.success) {
+                matchData = result.match;
+                updateAllUI();
+            }
+        }
+
+        async function editScore() {
+            const over = document.getElementById('editOver').value;
+            const ball = document.getElementById('editBall').value;
+            const value = document.getElementById('editRun').value;
+            if (!matchId || !over || !ball || !value) {
+                showToast('Fill all fields');
+                return;
+            }
+            const result = await apiCall(`/api/match/${matchId}/edit`, 'POST', { over, ball, value });
+            if (result.success) {
+                matchData = result.match;
+                updateAllUI();
+                updateScoreboardTable();
+                updateEditedList();
+                showToast('Score updated');
+                document.getElementById('editOver').value = '';
+                document.getElementById('editBall').value = '';
+                document.getElementById('editRun').value = '';
+            } else {
+                showToast(result.message);
+            }
+        }
+
+        async function resetMatch() {
+            if (!matchId) return initMatch();
+            const result = await apiCall(`/api/match/${matchId}/reset`, 'POST');
+            if (result.success) {
+                matchData = result.match;
+                updateAllUI();
+                updateScoreboardTable();
+                document.getElementById('editedList').innerHTML = '';
+                showToast('Match reset!');
+            }
+        }
+
+        // UI Updates
+        function updateAllUI() {
+            if (!matchData) return;
+            document.getElementById('displayRuns').textContent = matchData.total_runs;
+            document.getElementById('displayWickets').textContent = matchData.total_wickets;
+            document.getElementById('displayOvers').textContent = matchData.overs_display;
+            updateRunboard();
+            updateTargetDisplay();
+            updateNoBallButton();
+        }
+
+        function updateRunboard() {
+            if (!matchData) return;
+            const dots = document.querySelectorAll('#runboard .ball-dot');
+            const currentOverIdx = matchData.current_over - 1;
+            const over = matchData.scoreboard[currentOverIdx] || { balls: [] };
+            
+            dots.forEach((dot, i) => {
+                dot.classList.remove('current', 'wicket', 'four', 'six');
+                dot.textContent = '•';
+                dot.style.color = '';
+                
+                if (over.balls[i] !== undefined) {
+                    const val = over.balls[i];
+                    if (val === 'D') { dot.textContent = '•'; dot.style.color = '#64748b'; }
+                    else if (val === 'W') { dot.textContent = 'W'; dot.classList.add('wicket'); }
+                    else if (val === 4) { dot.textContent = '4'; dot.classList.add('four'); }
+                    else if (val === 6) { dot.textContent = '6'; dot.classList.add('six'); }
+                    else { dot.textContent = val; dot.style.color = '#e2e8f0'; }
+                }
+                
+                if (i + 1 === matchData.current_ball && matchData.current_ball <= 6) {
+                    dot.classList.add('current');
+                }
+            });
+        }
+
+        function updateTargetDisplay() {
+            if (!matchData) return;
+            const banner = document.getElementById('targetBanner');
+            const btnTarget = document.getElementById('btnTargetMode');
+            
+            if (matchData.target_mode) {
+                banner.style.display = 'block';
+                btnTarget.classList.add('active');
+                const runsNeeded = matchData.target_runs - matchData.total_runs;
+                const ballsLeft = matchData.target_overs * 6 - ((matchData.current_over - 1) * 6 + matchData.current_ball - 1);
+                
+                if (ballsLeft <= 0 || runsNeeded <= 0) {
+                    let msg = '';
+                    if (matchData.total_runs > matchData.target_runs) msg = '🏆 Batting team WINS!';
+                    else if (matchData.total_runs === matchData.target_runs && ballsLeft === 0) msg = '🤝 Match TIED!';
+                    else if (ballsLeft <= 0) msg = '🛡️ Bowling team WINS!';
+                    else msg = '🏆 Batting team WINS!';
+                    document.getElementById('targetContent').innerHTML = `<span style="font-size:1.1rem;font-weight:700;">${msg}</span>`;
+                } else {
+                    document.getElementById('targetContent').innerHTML = `
+                        Need <span class="badge">${Math.max(0, runsNeeded)}</span> runs in 
+                        <span class="badge">${Math.max(0, ballsLeft)}</span> balls
+                    `;
+                }
+            } else {
+                banner.style.display = 'none';
+                btnTarget.classList.remove('active');
+            }
+        }
+
+        function updateNoBallButton() {
+            const btn = document.getElementById('btnNoBall');
+            if (matchData && matchData.is_no_ball_pending) {
+                btn.classList.add('no-ball-active');
+                btn.querySelector('span').textContent = 'No Ball*';
+            } else {
+                btn.classList.remove('no-ball-active');
+                btn.querySelector('span').textContent = 'No Ball';
+            }
+        }
+
+        function updateScoreboardTable() {
+            if (!matchData) return;
+            const tbody = document.getElementById('scoreboardBody');
+            tbody.innerHTML = matchData.scoreboard.map((over, i) => `
+                <tr>
+                    <td><strong>${i + 1}</strong></td>
+                    <td>${over.balls.map(b => b === 'D' ? '•' : b).join(' ') || '—'} 
+                        <span style="color:#22d3ee;font-size:0.7rem;">(${over.extras})</span></td>
+                </tr>
+            `).join('') || '<tr><td colspan="2" style="text-align:center;color:var(--text-tertiary);">No balls yet</td></tr>';
+        }
+
+        function updateEditedList() {
+            if (!matchData || !matchData.edit_history) return;
+            document.getElementById('editedList').innerHTML = matchData.edit_history.length > 0 
+                ? '<strong>Edited:</strong><br>' + matchData.edit_history.slice(-5).join('<br>') 
+                : '';
+        }
+
+        function showToast(msg) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 2800);
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // Event Listeners
+        document.querySelectorAll('.action-btn[data-action]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const action = btn.dataset.action;
+                if (action === 'noball' && matchData && matchData.is_no_ball_pending) return;
+                performAction(action);
+            });
+        });
+
+        document.getElementById('btnUndo').addEventListener('click', () => openModal('modalUndo'));
+        document.getElementById('confirmUndo').addEventListener('click', performUndo);
+        document.getElementById('btnScoreboard').addEventListener('click', () => {
+            updateScoreboardTable();
+            updateEditedList();
+            openModal('modalScoreboard');
+        });
+        document.getElementById('btnTargetMode').addEventListener('click', () => {
+            if (matchData && matchData.target_mode) {
+                disableTarget();
+            } else {
+                openModal('modalTarget');
+            }
+        });
+        document.getElementById('btnSetTarget').addEventListener('click', setTarget);
+        document.getElementById('btnApplyEdit').addEventListener('click', editScore);
+        document.getElementById('btnReset').addEventListener('click', () => {
+            if (confirm('Start a new match? All data will be lost.')) resetMatch();
+        });
+        document.getElementById('closeTarget').addEventListener('click', disableTarget);
+
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.style.display = 'none'; });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+            const key = e.key.toLowerCase();
+            const shortcuts = {
+                'd': 'dot', '1': '1', '2': '2', '3': '3', '4': '4', '6': '6',
+                'w': 'wicket', 'e': 'wide', 'n': 'noball'
+            };
+            if (shortcuts[key]) {
+                e.preventDefault();
+                if (key === 'n' && matchData && matchData.is_no_ball_pending) return;
+                performAction(shortcuts[key]);
+            }
+            if ((key === 'z' && (e.ctrlKey || e.metaKey)) || key === 'u') {
+                e.preventDefault();
+                performUndo();
+            }
+        });
+
+        // Initialize
+        initMatch();
+    </script>
+</body>
+</html>
